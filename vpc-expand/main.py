@@ -13,17 +13,10 @@ from pathlib import Path
 from aws_services_data import AwsServicesData
 from analyzer import Analyzer
 from entities import AwsCredentials
+from logger import Logger
 
 
 def set_cli_args(parser: argparse.ArgumentParser) -> None:
-    # parser.add_argument(
-    #     'region',
-    #     metavar='region',
-    #     nargs=1,
-    #     type=str,
-    #     help='Aws region where to find vpcs'
-    # )
-
     parser.add_argument(
         '--vpc-id',
         nargs=1,
@@ -38,13 +31,13 @@ def set_cli_args(parser: argparse.ArgumentParser) -> None:
     )
 
 
-def run():
+def run(log: Logger):
     parser = argparse.ArgumentParser(
         prog='vpc-expand',
         description=__doc__,
         epilog='github.com/PauSabatesC'
     )
-
+    log.error('xd', Exception)
     set_cli_args(parser)
     args = parser.parse_args()
 
@@ -83,7 +76,7 @@ def check_aws_credentials(profile: str) -> AwsCredentials:
             print("AWS credentials file was not found. Please run 'aws configure' to create it.")
             exit(1)
     except subprocess.CalledProcessError as e:
-        print("Error reading aws credentials file. " + e)
+        print("Error finding aws credentials file. " + e)
 
     try:
         cred_obj = AwsCredentials(
@@ -118,15 +111,6 @@ def check_aws_credentials(profile: str) -> AwsCredentials:
         return cred_obj
 
 
-def jojo():
-    print('jojo')
-    x = subprocess.run(['ls', '-la'])
-    print(x)
-    print(x.args)
-    print(x.returncode)
-    print(x.stdout)
-    print(x.stderr)
-
-
 if __name__ == "__main__":
-    run()
+    log = Logger(debug_flag=True)
+    run(log)
