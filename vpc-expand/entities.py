@@ -15,8 +15,8 @@ class AwsCredentials:
     Credentials of aws user running script.
     """
 
-    def __init__(self, profile, aws_key, aws_access_key, region):
+    def __init__(self, profile, aws_key, aws_secret_key, region):
         self.profile = profile
         self.aws_key = aws_key
-        self.aws_access_key = aws_access_key
+        self.aws_secret_key = aws_secret_key
         self.region = region

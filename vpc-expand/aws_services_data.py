@@ -1,12 +1,14 @@
 from typing import List
 from entities import AwsObjectData
+from logger import Logger
 
 
 class AwsServicesData:
     """
     Lists of different aws services data.
     """
-    def __init__(self, aws_region: str):
+    def __init__(self, aws_region: str, log: Logger):
+        self.log = log
         self.region: str = aws_region
         self.__vpcs: List[AwsObjectData] = []
         self.__subnets: List[AwsObjectData] = []
