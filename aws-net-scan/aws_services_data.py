@@ -1,7 +1,7 @@
 from typing import List
 from entities import AwsObjectData
 from logger import Logger
-
+from printer import *
 
 class AwsServicesData:
     """
@@ -49,5 +49,8 @@ class AwsServicesData:
 
     def print(self):
         for vpc in self.__vpcs:
-            print(vpc.name)
+            print_vpc_data(vpc)
+            for subnet in self.__subnets:
+                if subnet.vpc_id == vpc.vpc_id:
+                    print_subnet_data(subnet)
 

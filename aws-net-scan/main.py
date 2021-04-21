@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 """
-Get all AWS services inside a VPC .
+Get useful AWS data regarding VPC networking in a structured output.
+A map af all your subnets, ec2s, route tables and vpcs in your teminal .
 """
 __author__ = 'github.com/PauSabatesC'
 __version__ = '1.0'
@@ -33,7 +34,7 @@ def set_cli_args(parser: argparse.ArgumentParser) -> None:
 
 def run(log: Logger):
     parser = argparse.ArgumentParser(
-        prog='vpc-expand',
+        prog='aws-net-scan',
         description=__doc__,
         epilog='github.com/PauSabatesC'
     )
@@ -54,8 +55,8 @@ def run(log: Logger):
         vpc_analyzer.search_vpcs(vpc_id=args.vpc_id[0])
     else:
         vpc_analyzer.search_vpcs()
-
-    #services_data.print()
+    vpc_analyzer.search_subnets()
+    services_data.print()
 
 
 def check_aws_credentials(profile: str, log:Logger) -> AwsCredentials:

@@ -3,9 +3,11 @@ class AwsObjectData:
     POCO entity class for storing aws service data.
     """
 
-    def __init__(self, self_id: str, vpc_id: str, tags: list = None, name: str = None):
+    def __init__(self, self_id: str, vpc_id: str, cidr: str, tags: list = None, name: str = None, **kwargs):
+        self.__dict__.update(kwargs)
         self.id = self_id
         self.vpc_id = vpc_id
+        self.cidr = cidr
         self.tags = tags
         self.name = name
 
