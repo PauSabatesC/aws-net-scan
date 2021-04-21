@@ -3,11 +3,11 @@ from logger import LogColors
 
 
 def print_vpc_data(vpc_data: AwsObjectData):
-    print( '\n'+
+    print('\n' +
           LogColors.START_TITLE + 'VPC: ' + vpc_data.vpc_id + LogColors.INTERSECTION +
           LogColors.BLUE2 + 'Name: ' + vpc_data.name + LogColors.INTERSECTION +
           LogColors.BLUE2 + 'CIDR: ' + vpc_data.cidr + LogColors.INTERSECTION +
-          LogColors.BLUE2 + 'InetGateway: ' + vpc_data.igw +  LogColors.INTERSECTION
+          LogColors.BLUE2 + 'InetGateway: ' + vpc_data.igw + LogColors.INTERSECTION
 
           )
 
@@ -32,3 +32,16 @@ def print_subnet_data(subnet_data: AwsObjectData):
             LogColors.START_SUBTITLE + LogColors.START_SUBTITLE + LogColors.START_SUBTITLE +
             'ROUTES: ' + str_routes
         )
+
+
+def print_ec2s(ec2:AwsObjectData):
+    print(
+        LogColors.START_SUBTITLE + LogColors.START_SUBTITLE +
+        LogColors.START_SUBTITLE + LogColors.START_SUBTITLE +
+        'EC2: ' + ec2.id + LogColors.INTERSECTION + LogColors.BLUE1 +
+        'Name: ' + ec2.name + LogColors.INTERSECTION + LogColors.BLUE1 +
+         ec2.state + LogColors.INTERSECTION + LogColors.BLUE1 +
+        ec2.instance_type + LogColors.INTERSECTION + LogColors.BLUE1 +
+        'Private IP: ' + ec2.private_ip + LogColors.INTERSECTION + LogColors.BLUE1 +
+        'Public IP: ' + ec2.public_ip + LogColors.INTERSECTION + LogColors.BLUE1
+    )

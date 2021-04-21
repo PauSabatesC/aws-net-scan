@@ -61,7 +61,7 @@ def run(log: Logger):
         vpc_analyzer.search_vpcs(vpc_id=args.vpc_id[0])
     else:
         vpc_analyzer.search_vpcs()
-    vpc_analyzer.search_subnets()
+    vpc_analyzer.scan_services()
     services_data.print()
 
     log.success('Scan finished successfully.')

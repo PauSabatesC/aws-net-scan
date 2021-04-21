@@ -53,4 +53,7 @@ class AwsServicesData:
             for subnet in self.__subnets:
                 if subnet.vpc_id == vpc.vpc_id:
                     print_subnet_data(subnet)
+                    for ec2 in self.__ec2:
+                        if subnet.id == ec2.subnet_id:
+                            print_ec2s(ec2)
 

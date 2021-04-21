@@ -25,4 +25,4 @@ $ source scripts/clean_env.sh dev
 	- add loading animation
 	- add tests
 	- add gh actions, tux.ini, setup.py 
-	-
+	- -vvv option to show more data

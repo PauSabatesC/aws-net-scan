@@ -104,3 +104,23 @@ class AwsService:
             return response
         else:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
+
+    def get_ec2s(self, subnet_id):
+        response = self.aws_ec2_client.describe_instances(
+            Filters=[
+                {
+                    'Name': 'subnet-id',
+                    'Values': [
+                        subnet_id
+                    ]
+                }
+            ]
+        )
+
+        if utils.validate_aws_response(response):
+            return response
+        else:
+            self.log.error_and_exit('AWS http response error getting main route tables data.')
+
+
+

@@ -44,30 +44,70 @@ class Analyzer:
         except botocore.exceptions.ClientError as e:
             self.log.error_and_exit('Error getting vpc data from AWS.', e)
         except botocore.exceptions.EndpointConnectionError as e:
-            self.log.error_and_exit('Could not be stablished a connection to AWS. Try in a few minutes.', e)
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get VPCs. Try in a few minutes.', e)
 
-    def search_subnets(self):
+    def scan_services(self):
+        for vpc in self.data.vpcs:
+            self.__search_subnets(vpc)
+        for subnet in self.data.subnets:
+            self.__search_ec2(subnet)
+
+    def __search_subnets(self, vpc: AwsObjectData):
         try:
-            for vpc in self.data.vpcs:
-                subnets = self.aws_service.get_subnets(vpc.vpc_id)
-                for subnet in subnets['Subnets']:
-                    route_tables_res = self.aws_service.get_route_tables(subnet['SubnetId'])
-                    if len(route_tables_res['RouteTables']) > 0:
-                        route_tables = route_tables_res['RouteTables'][0]['Routes']
-                    else:  # The subnet has no route table attached, so it'll use the main VPC route table
-                        response = self.aws_service.get_route_tables_main_vpc(vpc.vpc_id)
-                        route_tables = response['RouteTables'][0]['Routes']
-                    self.data.add_subnet(
-                        AwsObjectData(
-                            self_id=subnet['SubnetId'],
-                            vpc_id=vpc.vpc_id,
-                            tags=subnet['Tags'],
-                            cidr=subnet['CidrBlock'],
-                            route_tables=route_tables,
-                            name=self.get_service_name(subnet['Tags'])
-                        )
+            subnets = self.aws_service.get_subnets(vpc.vpc_id)
+            for subnet in subnets['Subnets']:
+                route_tables_res = self.aws_service.get_route_tables(subnet['SubnetId'])
+                if len(route_tables_res['RouteTables']) > 0:
+                    route_tables = route_tables_res['RouteTables'][0]['Routes']
+                else:  # The subnet has no route table attached, so it'll use the main VPC route table
+                    response = self.aws_service.get_route_tables_main_vpc(vpc.vpc_id)
+                    route_tables = response['RouteTables'][0]['Routes']
+                self.data.add_subnet(
+                    AwsObjectData(
+                        self_id=subnet['SubnetId'],
+                        vpc_id=vpc.vpc_id,
+                        tags=subnet['Tags'],
+                        cidr=subnet['CidrBlock'],
+                        route_tables=route_tables,
+                        name=self.get_service_name(subnet['Tags'])
                     )
+                )
         except botocore.exceptions.ClientError as e:
             self.log.error_and_exit('Error getting subnets from VPC.', e)
         except botocore.exceptions.EndpointConnectionError as e:
-            self.log.error_and_exit('Could not be stablished a connection to AWS. Try in a few minutes.', e)
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
+                                    'Try in a few minutes.', e)
+
+    def __search_ec2(self, subnet):
+        try:
+            ec2s = self.aws_service.get_ec2s(subnet.id)
+            for ec2 in ec2s:
+                for reservation in ec2s['Reservations']:
+                    for instance in reservation['Instances']:
+                        tags = None
+                        name = ''
+                        if 'Tags' in instance:
+                            tags = instance['Tags']
+                            name = self.get_service_name(instance['Tags'])
+                        public_ip = ''
+                        if 'PublicIpAddress' in instance:
+                            public_ip = instance['PublicIpAddress']
+
+                        self.data.add_ec2(
+                            AwsObjectData(
+                                self_id=instance['InstanceId'],
+                                subnet_id=subnet.id,
+                                vpc_id=subnet.vpc_id,
+                                tags=tags,
+                                name=name,
+                                public_ip=public_ip,
+                                private_ip=instance['PrivateIpAddress'],
+                                sec_groups=instance['SecurityGroups'],
+                                instance_type=instance['InstanceType'],
+                                state=instance['State']['Name']
+                            )
+                        )
+        except botocore.exceptions.ClientError as e:
+            self.log.error_and_exit('Error getting subnets from VPC.', e)
+        except botocore.exceptions.EndpointConnectionError as e:
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get ec2s. Try in a few minutes.', e)

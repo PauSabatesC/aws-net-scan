@@ -5,7 +5,7 @@ def pretty_json(dictionary: dict):
     """
     Returns a dictionary or dictionary list sorted and idented for better visualization.
     """
-    return json.dumps(dictionary, indent=2, sort_keys=True)
+    return json.dumps(dictionary, indent=2, sort_keys=True, default=str)
 
 
 def validate_aws_response(response: dict):
