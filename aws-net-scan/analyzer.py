@@ -12,6 +12,12 @@ class Analyzer:
         self.data = services_data
         self.aws_service = aws_service
 
+    def get_service_name(self, tags: list) -> str:
+        for tag in tags:
+            if tag['Key'] == 'Name':
+                return tag['Value']
+        return ''
+
     def search_vpcs(self, vpc_id=None):
         try:
             if vpc_id:
@@ -24,13 +30,15 @@ class Analyzer:
                 igw = 'None'
                 if len(inetgws['InternetGateways']) > 0:
                     igw = inetgws['InternetGateways'][0]['InternetGatewayId']
+
                 self.data.add_vpc(
                     AwsObjectData(
                         vpc_id=vpc['VpcId'],
                         self_id=vpc['VpcId'],
                         cidr=vpc['CidrBlock'],
                         tags=vpc['Tags'],
-                        igw=igw
+                        igw=igw,
+                        name=self.get_service_name(vpc['Tags'])
                     )
                 )
         except botocore.exceptions.ClientError as e:
@@ -55,7 +63,8 @@ class Analyzer:
                             vpc_id=vpc.vpc_id,
                             tags=subnet['Tags'],
                             cidr=subnet['CidrBlock'],
-                            route_tables=route_tables
+                            route_tables=route_tables,
+                            name=self.get_service_name(subnet['Tags'])
                         )
                     )
         except botocore.exceptions.ClientError as e:

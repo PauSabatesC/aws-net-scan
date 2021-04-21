@@ -30,13 +30,15 @@ class Logger:
         print(LogColors.START_ERROR + msg + LogColors.NOCOLOR)
         if self.debug_flag and exception:
             print('Exception: ', exception)
-            print('Trace: ', traceback.print_exc())
+            print('Trace: ')
+            traceback.print_exc()
 
     def error_and_exit(self, msg: str, exception: Exception = None):
         print(LogColors.START_ERROR + msg + LogColors.NOCOLOR)
         if self.debug_flag and exception:
             print('Exception: ', exception)
-            print('Trace: ', traceback.print_exc())
+            print('Trace: ')
+            traceback.print_exc()
         exit(1)
 
     def warn(self, msg: str, exception: Exception = None):
@@ -60,5 +62,6 @@ class Logger:
             if self.debug_flag and exception:
                 print('Exception: ', exception)
 
-
+    def loading(self, msg: str):
+        print(LogColors.LOADING + msg + LogColors.NOCOLOR, end='', flush=True)
 

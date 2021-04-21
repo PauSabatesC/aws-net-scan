@@ -64,6 +64,8 @@ def run(log: Logger):
     vpc_analyzer.search_subnets()
     services_data.print()
 
+    log.success('Scan finished successfully.')
+
 
 def check_aws_credentials(profile: str, log:Logger) -> AwsCredentials:
     """

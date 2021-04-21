@@ -18,5 +18,11 @@ $ source scripts/clean_env.sh dev
 ```
 
 - TODOs:
-		- filter services with tags
 
+	- filter services with tags
+	- get rds in vpcs
+	- get ecs in vpcs
+	- add loading animation
+	- add tests
+	- add gh actions, tux.ini, setup.py 
+	-
