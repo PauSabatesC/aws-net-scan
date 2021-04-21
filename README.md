@@ -1,5 +1,8 @@
 # aws-net-scan
 
+Get useful AWS data regarding VPC networking in a structured output.
+A map af all your subnets, ec2s, route tables and vpcs in your teminal .
+
 (project under early development)
 
 - Setup development environment

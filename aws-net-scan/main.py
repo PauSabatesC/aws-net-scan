@@ -15,6 +15,7 @@ from aws_services_data import AwsServicesData
 from analyzer import Analyzer
 from entities import AwsCredentials
 from logger import Logger
+from services import AwsService
 
 
 def set_cli_args(parser: argparse.ArgumentParser) -> None:
@@ -44,11 +45,16 @@ def run(log: Logger):
 
     credentials: AwsCredentials = check_aws_credentials(args.profile, log)
     services_data = AwsServicesData(aws_region=credentials.region, log=log)
-    vpc_analyzer = Analyzer(
+    aws_service = AwsService(
         aws_secret_key=credentials.aws_secret_key,
         aws_key=credentials.aws_key,
-        services_data=services_data,
+        region=services_data.region,
         log=log
+    )
+    vpc_analyzer = Analyzer(
+        services_data=services_data,
+        log=log,
+        aws_service=aws_service
     )
 
     if args.vpc_id:
