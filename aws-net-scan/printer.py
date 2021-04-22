@@ -1,13 +1,24 @@
 from entities import AwsObjectData
 from logger import LogColors
+from tabulate import tabulate
 
 
 def print_vpc_data(vpc_data: AwsObjectData):
+    # headers = ['VPC', 'Name', 'CIDR', 'InetGateway']
+    # data = [
+    #     [LogColors.START_TITLE + 'VPC: ' + vpc_data.vpc_id + LogColors.INTERSECTION,
+    #      LogColors.BLUE2 + 'Name: ' + vpc_data.name + LogColors.INTERSECTION,
+    #      LogColors.BLUE2 + 'CIDR: ' + vpc_data.cidr + LogColors.INTERSECTION,
+    #      LogColors.BLUE2 + 'InetGateway: ' + vpc_data.igw + LogColors.INTERSECTION
+    #      ]
+    # ]
+    # table = columnar(data, no_borders=True)
+    # print(table )
     print('\n' +
           LogColors.START_TITLE + 'VPC: ' + vpc_data.vpc_id + LogColors.INTERSECTION +
-          LogColors.BLUE2 + 'Name: ' + vpc_data.name + LogColors.INTERSECTION +
-          LogColors.BLUE2 + 'CIDR: ' + vpc_data.cidr + LogColors.INTERSECTION +
-          LogColors.BLUE2 + 'InetGateway: ' + vpc_data.igw + LogColors.INTERSECTION
+          LogColors.WARNING + 'Name: ' + vpc_data.name + LogColors.INTERSECTION +
+          LogColors.WARNING + 'CIDR: ' + vpc_data.cidr + LogColors.INTERSECTION +
+          LogColors.WARNING + 'InetGateway: ' + vpc_data.igw + LogColors.INTERSECTION
 
           )
 
@@ -23,9 +34,9 @@ def print_subnet_data(subnet_data: AwsObjectData):
     if subnet_data.route_tables:
         str_routes = ''
         for route in subnet_data.route_tables:
-            if 'GatewayId' in route:
+            if 'GatewayId' in route and 'DestinationCidrBlock' in route:
                 str_routes += route['DestinationCidrBlock'] + '->' + route['GatewayId'] + ' | '
-            elif 'NatGatewayId' in route:
+            elif 'NatGatewayId' in route and 'DestinationCidrBlock' in route:
                 str_routes += route['DestinationCidrBlock'] + '->' + route['NatGatewayId'] + ' | '
 
         print(
@@ -34,14 +45,26 @@ def print_subnet_data(subnet_data: AwsObjectData):
         )
 
 
-def print_ec2s(ec2:AwsObjectData):
-    print(
-        LogColors.START_SUBTITLE + LogColors.START_SUBTITLE +
-        LogColors.START_SUBTITLE + LogColors.START_SUBTITLE +
-        'EC2: ' + ec2.id + LogColors.INTERSECTION + LogColors.BLUE1 +
-        'Name: ' + ec2.name + LogColors.INTERSECTION + LogColors.BLUE1 +
-         ec2.state + LogColors.INTERSECTION + LogColors.BLUE1 +
-        ec2.instance_type + LogColors.INTERSECTION + LogColors.BLUE1 +
-        'Private IP: ' + ec2.private_ip + LogColors.INTERSECTION + LogColors.BLUE1 +
-        'Public IP: ' + ec2.public_ip + LogColors.INTERSECTION + LogColors.BLUE1
-    )
+def print_ec2s(ec2_list):
+    data = []
+    for ec2 in ec2_list:
+        data.append([
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            'EC2: ' + ec2.id,
+            'Name: ' + ec2.name,
+            ec2.state,
+            ec2.instance_type,
+            'Private IP: ' + ec2.private_ip,
+            'Public IP: ' + ec2.public_ip
+        ]
+        )
+    # col_width = max(len(word) for row in data for word in row) + 2  # padding
+    # for row in data:
+    #     print(
+    #         LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+    #         LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+    #         "{: >20} {: =<30} {: <30} {: ^20} {: >20} {: >15}".format(*row))
+    if data:
+        print(tabulate(data, tablefmt="plain"))
+

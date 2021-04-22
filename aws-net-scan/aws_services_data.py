@@ -3,10 +3,12 @@ from entities import AwsObjectData
 from logger import Logger
 from printer import *
 
+
 class AwsServicesData:
     """
     Lists of different aws services data.
     """
+
     def __init__(self, aws_region: str, log: Logger):
         self.log = log
         self.region: str = aws_region
@@ -50,10 +52,18 @@ class AwsServicesData:
     def print(self):
         for vpc in self.__vpcs:
             print_vpc_data(vpc)
-            for subnet in self.__subnets:
+            # Printing all the subnets in this vpc
+            for i, subnet in enumerate(self.__subnets):
                 if subnet.vpc_id == vpc.vpc_id:
                     print_subnet_data(subnet)
-                    for ec2 in self.__ec2:
+                    # Getting all the ec2 in this subnet into a list for printing later as a table
+                    ec2_list = []
+                    for j, ec2 in enumerate(self.__ec2):
                         if subnet.id == ec2.subnet_id:
-                            print_ec2s(ec2)
+                            # Storing running ec2 at the start of the list
+                            if ec2.state == 'running':
+                                ec2_list.insert(0,ec2)
+                            else:
+                                ec2_list.append(ec2)
+                    print_ec2s(ec2_list)
 

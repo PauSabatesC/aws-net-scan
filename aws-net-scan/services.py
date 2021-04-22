@@ -1,5 +1,6 @@
 import boto3
 import botocore
+from botocore.config import Config
 import utils
 from logger import Logger
 
@@ -7,18 +8,19 @@ from logger import Logger
 class AwsService:
     def __init__(self, aws_key: str, aws_secret_key: str, region: str, log: Logger):
         self.log = log
-        self.aws_session = boto3.Session(
-            aws_access_key_id=aws_key,
-            aws_secret_access_key=aws_secret_key,
-            region_name=region
+        config = Config(
+            retries={
+                'max_attempts': 10,
+                'mode': 'standard'
+            }
         )
         self.aws_ec2_client = boto3.client(
             'ec2',
-            aws_access_key_id=aws_key,
-            aws_secret_access_key=aws_secret_key,
-            region_name=region
+            aws_access_key_id=str(aws_key),
+            aws_secret_access_key=str(aws_secret_key),
+            region_name=str(region),
+            config=config
         )
-        self.aws_ec2_res = self.aws_session.resource('ec2')
 
     def get_vpcs(self, vpc_id: str = None):
         if vpc_id:

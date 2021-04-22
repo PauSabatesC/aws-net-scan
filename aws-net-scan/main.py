@@ -63,7 +63,7 @@ def run(log: Logger):
         vpc_analyzer.search_vpcs()
     vpc_analyzer.scan_services()
     services_data.print()
-
+    print('\n')
     log.success('Scan finished successfully.')
 
 

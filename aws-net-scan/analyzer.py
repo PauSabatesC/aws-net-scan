@@ -30,15 +30,19 @@ class Analyzer:
                 igw = 'None'
                 if len(inetgws['InternetGateways']) > 0:
                     igw = inetgws['InternetGateways'][0]['InternetGatewayId']
-
+                tags = None
+                name = ''
+                if 'Tags' in vpc:
+                    tags = vpc['Tags']
+                    name = self.get_service_name(vpc['Tags'])
                 self.data.add_vpc(
                     AwsObjectData(
                         vpc_id=vpc['VpcId'],
                         self_id=vpc['VpcId'],
                         cidr=vpc['CidrBlock'],
-                        tags=vpc['Tags'],
+                        tags=tags,
                         igw=igw,
-                        name=self.get_service_name(vpc['Tags'])
+                        name=name
                     )
                 )
         except botocore.exceptions.ClientError as e:
@@ -62,14 +66,19 @@ class Analyzer:
                 else:  # The subnet has no route table attached, so it'll use the main VPC route table
                     response = self.aws_service.get_route_tables_main_vpc(vpc.vpc_id)
                     route_tables = response['RouteTables'][0]['Routes']
+                tags = None
+                name = ''
+                if 'Tags' in subnet:
+                    tags = subnet['Tags']
+                    name = self.get_service_name(subnet['Tags'])
                 self.data.add_subnet(
                     AwsObjectData(
                         self_id=subnet['SubnetId'],
                         vpc_id=vpc.vpc_id,
-                        tags=subnet['Tags'],
+                        tags=tags,
                         cidr=subnet['CidrBlock'],
                         route_tables=route_tables,
-                        name=self.get_service_name(subnet['Tags'])
+                        name=name
                     )
                 )
         except botocore.exceptions.ClientError as e:
@@ -81,32 +90,31 @@ class Analyzer:
     def __search_ec2(self, subnet):
         try:
             ec2s = self.aws_service.get_ec2s(subnet.id)
-            for ec2 in ec2s:
-                for reservation in ec2s['Reservations']:
-                    for instance in reservation['Instances']:
-                        tags = None
-                        name = ''
-                        if 'Tags' in instance:
-                            tags = instance['Tags']
-                            name = self.get_service_name(instance['Tags'])
-                        public_ip = ''
-                        if 'PublicIpAddress' in instance:
-                            public_ip = instance['PublicIpAddress']
+            for ec2 in ec2s['Reservations']:
+                for instance in ec2['Instances']:
+                    tags = None
+                    name = ''
+                    if 'Tags' in instance:
+                        tags = instance['Tags']
+                        name = self.get_service_name(instance['Tags'])
+                    public_ip = ''
+                    if 'PublicIpAddress' in instance:
+                        public_ip = instance['PublicIpAddress']
 
-                        self.data.add_ec2(
-                            AwsObjectData(
-                                self_id=instance['InstanceId'],
-                                subnet_id=subnet.id,
-                                vpc_id=subnet.vpc_id,
-                                tags=tags,
-                                name=name,
-                                public_ip=public_ip,
-                                private_ip=instance['PrivateIpAddress'],
-                                sec_groups=instance['SecurityGroups'],
-                                instance_type=instance['InstanceType'],
-                                state=instance['State']['Name']
-                            )
+                    self.data.add_ec2(
+                        AwsObjectData(
+                            self_id=instance['InstanceId'],
+                            subnet_id=subnet.id,
+                            vpc_id=subnet.vpc_id,
+                            tags=tags,
+                            name=name,
+                            public_ip=public_ip,
+                            private_ip=instance['PrivateIpAddress'],
+                            sec_groups=instance['SecurityGroups'],
+                            instance_type=instance['InstanceType'],
+                            state=instance['State']['Name']
                         )
+                    )
         except botocore.exceptions.ClientError as e:
             self.log.error_and_exit('Error getting subnets from VPC.', e)
         except botocore.exceptions.EndpointConnectionError as e:
