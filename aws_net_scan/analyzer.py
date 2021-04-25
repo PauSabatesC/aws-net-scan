@@ -1,9 +1,8 @@
 import botocore
-from entities import AwsObjectData
-from aws_services_data import AwsServicesData
-from logger import Logger
-from services import AwsService
-import utils
+from .entities import AwsObjectData
+from .aws_services_data import AwsServicesData
+from .logger import Logger
+from .services import AwsService
 
 
 class Analyzer:

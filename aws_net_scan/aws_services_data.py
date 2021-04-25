@@ -1,7 +1,6 @@
 from typing import List
-from entities import AwsObjectData
-from logger import Logger
-from printer import *
+from .logger import Logger
+from .printer import *
 
 
 class AwsServicesData:

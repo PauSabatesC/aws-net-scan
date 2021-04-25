@@ -4,3 +4,4 @@ set -e
 set -x
 
 
+python setup.py test

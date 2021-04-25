@@ -19,10 +19,10 @@ $ source scripts/clean_env.sh dev
 
 - TODOs:
 
-	- filter services with tags
 	- get rds in vpcs
 	- get ecs in vpcs
 	- add loading animation
+	- option to filter services with tags
 	- add tests
 	- add gh actions, tux.ini, setup.py 
-	- -vvv option to show more data
+	- -vvv option to show more aws data

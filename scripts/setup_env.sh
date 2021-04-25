@@ -13,7 +13,8 @@ echo "$DIRECTORY found in your directory. Activating it and setting $ENV environ
 
 source venv/bin/activate
 
-export $(grep -v '^#' ./$ENV.env | xargs)
-pip install -r requirements.txt
+#export $(grep -v '^#' ./$ENV.env | xargs)
+
+pip install -e .
 echo "Finished."
 
