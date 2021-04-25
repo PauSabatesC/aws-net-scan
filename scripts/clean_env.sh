@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -x
+#set -x
 
 ENV=$1
 #unset $(grep -v '^#' ./$ENV.env | sed 's/\=.*/''/g')

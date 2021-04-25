@@ -56,7 +56,8 @@ def run(log: Logger):
         log=log,
         aws_service=aws_service
     )
-
+    
+    log.success('Scanning data...')
     if args.vpc_id:
         vpc_analyzer.search_vpcs(vpc_id=args.vpc_id[0])
     else:
@@ -120,7 +121,7 @@ def check_aws_credentials(profile: str, log:Logger) -> AwsCredentials:
 
 
 def main():
-    log = Logger(debug_flag=True)
+    log = Logger(debug_flag=False)
     run(log)
 
 
