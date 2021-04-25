@@ -4,8 +4,8 @@ with open("README.md", "rb") as f:
     readme = f.read().decode("utf-8")
 
 setup(
-    name='aws_net_scan',
-    version='0.0.1',
+    name='aws-net-scan',
+    version='0.0.2',
     description='Get useful AWS data regarding VPC networking in a structured output.',
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -14,7 +14,6 @@ setup(
     license='Apache 2.0',
     python_requires=">=3.6, <4",
     classifiers=[
-        "Development Status :: AlphaTest",
         "Intended Audience :: Developers",
         "Natural Language :: English",
         "License :: OSI Approved :: Apache Software License",
@@ -33,6 +32,9 @@ setup(
     ],
     setup_requires=['pytest-runner', 'flake8'],
     tests_require=['pytest'],
-    entry_points={'console_scripts': ['aws_net_scan= aws_net_scan.__main__:main']},
-    keywords=['aws', 'network', 'scan', 'aws_net_scan', 'cloud', 'vpc', 'ec2'],
+    extras_require={
+        'deploy': ['twine'],
+    },
+    entry_points={'console_scripts': ['aws-net-scan= aws_net_scan.__main__:main']},
+    keywords=['aws', 'network', 'scan', 'aws-net-scan', 'cloud', 'vpc', 'ec2'],
 )
