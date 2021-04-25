@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-#set -e
-#set -x
 VIRTUAL_ENV="venv"
 if [[  ! -d "$VIRTUAL_ENV" ]]
 then
@@ -15,4 +13,10 @@ echo "$DIRECTORY found in your directory. Activating it and setting $ENV environ
 source venv/bin/activate
 
 #export $(grep -v '^#' ./$ENV.env | xargs)
-python setup.py test
+
+pip3 install -e .[deploy]
+python setup.py sdist
+pip3 install --upgrade pip
+python -m twine upload dist/*
+echo "Finished."
+

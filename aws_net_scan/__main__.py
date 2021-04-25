@@ -4,18 +4,18 @@ Get useful AWS data regarding VPC networking in a structured output.
 A map af all your subnets, ec2s, route tables and vpcs in your teminal .
 """
 __author__ = 'github.com/PauSabatesC'
-__version__ = '1.0'
+#__version__ = '1.0'
 
 import argparse
 import subprocess
 import os
 from subprocess import check_output
 from pathlib import Path
-from aws_services_data import AwsServicesData
-from analyzer import Analyzer
-from entities import AwsCredentials
-from logger import Logger
-from services import AwsService
+from .aws_services_data import AwsServicesData
+from .analyzer import Analyzer
+from .entities import AwsCredentials
+from .logger import Logger
+from .services import AwsService
 
 
 def set_cli_args(parser: argparse.ArgumentParser) -> None:
@@ -35,7 +35,7 @@ def set_cli_args(parser: argparse.ArgumentParser) -> None:
 
 def run(log: Logger):
     parser = argparse.ArgumentParser(
-        prog='aws-net-scan',
+        prog='aws_net_scan',
         description=__doc__,
         epilog='github.com/PauSabatesC'
     )
@@ -56,7 +56,8 @@ def run(log: Logger):
         log=log,
         aws_service=aws_service
     )
-
+    
+    log.success('Scanning data...')
     if args.vpc_id:
         vpc_analyzer.search_vpcs(vpc_id=args.vpc_id[0])
     else:
@@ -119,6 +120,10 @@ def check_aws_credentials(profile: str, log:Logger) -> AwsCredentials:
         return cred_obj
 
 
-if __name__ == "__main__":
-    log = Logger(debug_flag=True)
+def main():
+    log = Logger(debug_flag=False)
     run(log)
+
+
+if __name__ == "__main__":
+    main()

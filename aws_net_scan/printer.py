@@ -1,19 +1,9 @@
-from entities import AwsObjectData
-from logger import LogColors
+from .entities import AwsObjectData
+from .logger import LogColors
 from tabulate import tabulate
 
 
 def print_vpc_data(vpc_data: AwsObjectData):
-    # headers = ['VPC', 'Name', 'CIDR', 'InetGateway']
-    # data = [
-    #     [LogColors.START_TITLE + 'VPC: ' + vpc_data.vpc_id + LogColors.INTERSECTION,
-    #      LogColors.BLUE2 + 'Name: ' + vpc_data.name + LogColors.INTERSECTION,
-    #      LogColors.BLUE2 + 'CIDR: ' + vpc_data.cidr + LogColors.INTERSECTION,
-    #      LogColors.BLUE2 + 'InetGateway: ' + vpc_data.igw + LogColors.INTERSECTION
-    #      ]
-    # ]
-    # table = columnar(data, no_borders=True)
-    # print(table )
     print('\n' +
           LogColors.START_TITLE + 'VPC: ' + vpc_data.vpc_id + LogColors.INTERSECTION +
           LogColors.WARNING + 'Name: ' + vpc_data.name + LogColors.INTERSECTION +
@@ -59,12 +49,7 @@ def print_ec2s(ec2_list):
             'Public IP: ' + ec2.public_ip
         ]
         )
-    # col_width = max(len(word) for row in data for word in row) + 2  # padding
-    # for row in data:
-    #     print(
-    #         LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
-    #         LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
-    #         "{: >20} {: =<30} {: <30} {: ^20} {: >20} {: >15}".format(*row))
+
     if data:
         print(tabulate(data, tablefmt="plain"))
 

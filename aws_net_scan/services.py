@@ -1,8 +1,7 @@
 import boto3
-import botocore
 from botocore.config import Config
-import utils
-from logger import Logger
+from .utils import *
+from .logger import Logger
 
 
 class AwsService:
@@ -28,7 +27,7 @@ class AwsService:
         else:
             response = self.aws_ec2_client.describe_vpcs()
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting vpc data.')
@@ -45,7 +44,7 @@ class AwsService:
             ]
         )
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting internet gateway data.')
@@ -62,7 +61,7 @@ class AwsService:
             ]
         )
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting subnet data.')
@@ -79,7 +78,7 @@ class AwsService:
             ]
         )
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting route tables data.')
@@ -102,7 +101,7 @@ class AwsService:
             ]
         )
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
@@ -119,7 +118,7 @@ class AwsService:
             ]
         )
 
-        if utils.validate_aws_response(response):
+        if validate_aws_response(response):
             return response
         else:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
