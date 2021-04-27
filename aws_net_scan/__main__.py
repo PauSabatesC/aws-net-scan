@@ -20,6 +20,14 @@ from .services import AwsService
 
 def set_cli_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
+        '--region',
+        nargs=1,
+        help='Specific region to scan. The aws profile region will be omitted and used this one.',
+        default=['default'],
+        required=True
+    )
+
+    parser.add_argument(
         '--vpc-id',
         nargs=1,
         help='vpc id  to search from'
@@ -45,10 +53,17 @@ def run(log: Logger):
 
     credentials: AwsCredentials = check_aws_credentials(args.profile, log)
     services_data = AwsServicesData(aws_region=credentials.region, log=log)
+
+    region = ''
+    if args.region:
+        region = args.region[0]
+    else:
+        region = services_data.region
+
     aws_service = AwsService(
         aws_secret_key=credentials.aws_secret_key,
         aws_key=credentials.aws_key,
-        region=services_data.region,
+        region=region,
         log=log
     )
     vpc_analyzer = Analyzer(
@@ -104,17 +119,17 @@ def check_aws_credentials(profile: str, log:Logger) -> AwsCredentials:
                     cred_obj.aws_secret_key = aws_secret_key.split(' = ')[1]
                     break
 
-        with open(aws_config_file) as conf_file:
-            for line in conf_file:
-                if str(line).split('\n')[0] == '[{}]'.format(profile[0]) or \
-                        str(line).split('\n')[0] == '[profile {}]'.format(profile[0]):
-                    region = str(conf_file.readline()).split('\n')[0]
-                    cred_obj.region = region.split(' = ')[1]
-                    break
+        # with open(aws_config_file) as conf_file:
+        #     for line in conf_file:
+        #         if str(line).split('\n')[0] == '[{}]'.format(profile[0]) or \
+        #                 str(line).split('\n')[0] == '[profile {}]'.format(profile[0]):
+        #             region = str(conf_file.readline()).split('\n')[0]
+        #             cred_obj.region = region.split(' = ')[1]
+        #             break
     except OSError as e:
         log.error_and_exit("Error while opening aws credentials or config file. ", e)
     finally:
-        if not cred_obj.aws_key or not cred_obj.aws_secret_key or not cred_obj.region:
+        if not cred_obj.aws_key or not cred_obj.aws_secret_key:
             log.error_and_exit("AWS credentials are not set up.")
         log.success("AWS credentials obtained successfully from profile {}".format(profile[0]))
         return cred_obj
