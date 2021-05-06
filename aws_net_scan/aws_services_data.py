@@ -15,6 +15,7 @@ class AwsServicesData:
         self.__subnets: List[AwsObjectData] = []
         self.__ec2: List[AwsObjectData] = []
         self.__ecs: List[AwsObjectData] = []
+        self.__rds: List[AwsObjectData] = []
 
     @property
     def vpcs(self) -> List[AwsObjectData]:
@@ -32,6 +33,10 @@ class AwsServicesData:
     def ecs(self) -> List[AwsObjectData]:
         return self.__ecs
 
+    @property
+    def rds(self) -> List[AwsObjectData]:
+        return self.__rds
+
     def add_vpc(self, vpc_data: AwsObjectData):
         if type(vpc_data) is AwsObjectData:
             self.__vpcs.append(vpc_data)
@@ -48,6 +53,10 @@ class AwsServicesData:
         if type(ecs_data) is AwsObjectData:
             self.__ecs.append(ecs_data)
 
+    def add_rds(self, rds_data: AwsObjectData):
+        if type(rds_data) is AwsObjectData:
+            self.__rds.append(rds_data)
+
     def print(self):
         for vpc in self.__vpcs:
             print_vpc_data(vpc)
@@ -55,6 +64,7 @@ class AwsServicesData:
             for i, subnet in enumerate(self.__subnets):
                 if subnet.vpc_id == vpc.vpc_id:
                     print_subnet_data(subnet)
+
                     # Getting all the ec2 in this subnet into a list for printing later as a table
                     ec2_list = []
                     for j, ec2 in enumerate(self.__ec2):
@@ -65,4 +75,10 @@ class AwsServicesData:
                             else:
                                 ec2_list.append(ec2)
                     print_ec2s(ec2_list)
+
+                    rds_list = []
+                    for j, rds in enumerate(self.__rds):
+                        if subnet.id == rds.subnet_id:
+                            rds_list.append(rds)
+                    print_rds(rds_list)
 

@@ -20,6 +20,13 @@ class AwsService:
             region_name=str(region),
             config=config
         )
+        self.rds_client = boto3.client(
+            'rds',
+            aws_access_key_id=str(aws_key),
+            aws_secret_access_key=str(aws_secret_key),
+            region_name=str(region),
+            config=config
+        )
 
     def get_vpcs(self, vpc_id: str = None):
         if vpc_id:
@@ -123,5 +130,34 @@ class AwsService:
         else:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
 
+
+    def get_rds_instances(self):
+
+        response = self.rds_client.describe_db_instances()
+
+        if validate_aws_response(response):
+            return response
+        else:
+            self.log.error_and_exit('AWS http response error getting main route tables data.')
+
+    def get_rds_clusters(self):
+
+        response = self.rds_client.describe_db_clusters()
+
+        if validate_aws_response(response):
+            return response
+        else:
+            self.log.error_and_exit('AWS http response error getting main route tables data.')
+
+
+
+    def get_subnets_from_db_group(self):
+
+        response = self.rds_client.describe_db_subnet_groups()
+
+        if validate_aws_response(response):
+            return response
+        else:
+            self.log.error_and_exit('AWS http response error getting main route tables data.')
 
 
