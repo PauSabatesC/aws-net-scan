@@ -42,14 +42,28 @@ def print_ec2s(ec2_list):
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             'EC2: ' + ec2.id,
-            'Name: ' + ec2.name,
-            ec2.state,
-            ec2.instance_type,
-            'Private IP: ' + ec2.private_ip,
-            'Public IP: ' + ec2.public_ip
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Name: ' + ec2.name,
+            LogColors.INTERSECTION + LogColors.BLUE2 + ec2.state,
+            LogColors.INTERSECTION + LogColors.BLUE2 + ec2.instance_type,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Private IP: ' + ec2.private_ip,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Public IP: ' + ec2.public_ip
         ]
         )
 
     if data:
         print(tabulate(data, tablefmt="plain"))
 
+
+def print_rds(rds_list):
+    data = []
+    for rds in rds_list:
+        data.append([
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            'RDS: ' + rds.id,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Engine: ' + rds.engine,
+        ]
+        )
+
+    if data:
+        print(tabulate(data, tablefmt="plain"))

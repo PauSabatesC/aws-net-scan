@@ -3,6 +3,7 @@ from .entities import AwsObjectData
 from .aws_services_data import AwsServicesData
 from .logger import Logger
 from .services import AwsService
+from .utils import *
 
 
 class Analyzer:
@@ -54,6 +55,8 @@ class Analyzer:
             self.__search_subnets(vpc)
         for subnet in self.data.subnets:
             self.__search_ec2(subnet)
+
+        self.__search_rds()
 
     def __search_subnets(self, vpc: AwsObjectData):
         try:
@@ -118,3 +121,49 @@ class Analyzer:
             self.log.error_and_exit('Error getting subnets from VPC.', e)
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get ec2s. Try in a few minutes.', e)
+
+    def __search_rds(self):
+        try:
+            response = self.aws_service.get_rds_instances()
+            for db_instance in response['DBInstances']:
+                if 'DBSubnetGroup' in db_instance:
+                    if 'Subnets' in db_instance['DBSubnetGroup']:
+                        for rds_subnet in db_instance['DBSubnetGroup']['Subnets']:
+                            for subnet in self.data.subnets:
+                                if rds_subnet['SubnetIdentifier'] == subnet.id:
+                                    self.data.add_rds(
+                                        AwsObjectData(
+                                            self_id=db_instance['DBInstanceIdentifier'],
+                                            subnet_id=subnet.id,
+                                            vpc_id=db_instance['DBSubnetGroup']['VpcId'],
+                                            name=db_instance['DBInstanceIdentifier'],
+                                            engine=db_instance['Engine']
+                                        )
+                                    )
+
+            response_clusters = self.aws_service.get_rds_clusters()
+            cluster_subnet_groups = {}
+            cluster_subnet_engine = {}
+            for cluster in response_clusters['DBClusters']:
+                cluster_subnet_groups[cluster['DBSubnetGroup']] = cluster['DBClusterIdentifier']
+                cluster_subnet_engine[cluster['DBSubnetGroup']] = cluster['Engine'] + ' ' + cluster['EngineMode']
+
+            response_subnets = self.aws_service.get_subnets_from_db_group()
+            for subnet_group in response_subnets['DBSubnetGroups']:
+                if subnet_group['DBSubnetGroupName'] in cluster_subnet_groups.keys():
+                    subnets_visited = []
+                    for subnet in subnet_group['Subnets']:
+                        if not subnet['SubnetIdentifier'] in subnets_visited:
+                            self.data.add_rds(
+                                AwsObjectData(
+                                    self_id=cluster_subnet_groups[subnet_group['DBSubnetGroupName']],
+                                    subnet_id=subnet['SubnetIdentifier'],
+                                    engine=cluster_subnet_engine[subnet_group['DBSubnetGroupName']]
+                                )
+                            )
+                            subnets_visited.append(subnet['SubnetIdentifier'])
+        except botocore.exceptions.ClientError as e:
+            self.log.error_and_exit('Error getting rds.', e)
+        except botocore.exceptions.EndpointConnectionError as e:
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
+                                    'Try in a few minutes.', e)
