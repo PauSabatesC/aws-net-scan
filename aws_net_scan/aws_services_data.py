@@ -16,6 +16,7 @@ class AwsServicesData:
         self.__ec2: List[AwsObjectData] = []
         self.__ecs: List[AwsObjectData] = []
         self.__rds: List[AwsObjectData] = []
+        self.__elb: List[AwsObjectData] = []
 
     @property
     def vpcs(self) -> List[AwsObjectData]:
@@ -37,6 +38,10 @@ class AwsServicesData:
     def rds(self) -> List[AwsObjectData]:
         return self.__rds
 
+    @property
+    def elb(self) -> List[AwsObjectData]:
+        return self.__elb
+
     def add_vpc(self, vpc_data: AwsObjectData):
         if type(vpc_data) is AwsObjectData:
             self.__vpcs.append(vpc_data)
@@ -57,6 +62,10 @@ class AwsServicesData:
         if type(rds_data) is AwsObjectData:
             self.__rds.append(rds_data)
 
+    def add_elb(self, elb_data: AwsObjectData):
+        if type(elb_data) is AwsObjectData:
+            self.__elb.append(elb_data)
+
     def print(self):
         for vpc in self.__vpcs:
             print_vpc_data(vpc)
@@ -74,11 +83,19 @@ class AwsServicesData:
                                 ec2_list.insert(0,ec2)
                             else:
                                 ec2_list.append(ec2)
-                    print_ec2s(ec2_list)
+                    add_print_ec2s(ec2_list)
 
                     rds_list = []
                     for j, rds in enumerate(self.__rds):
                         if subnet.id == rds.subnet_id:
                             rds_list.append(rds)
-                    print_rds(rds_list)
+                    add_print_rds(rds_list)
+
+                    elb_list = []
+                    for j, elb in enumerate(self.__elb):
+                        if subnet.id == elb.subnet_id:
+                            elb_list.append(elb)
+                    add_print_elb(elb_list)
+
+                    print_data()
 

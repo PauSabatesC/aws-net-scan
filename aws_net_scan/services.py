@@ -27,6 +27,20 @@ class AwsService:
             region_name=str(region),
             config=config
         )
+        self.elb_client = boto3.client(
+            'elb',
+            aws_access_key_id=str(aws_key),
+            aws_secret_access_key=str(aws_secret_key),
+            region_name=str(region),
+            config=config
+        )
+        self.elbv2_client = boto3.client(
+            'elbv2',
+            aws_access_key_id=str(aws_key),
+            aws_secret_access_key=str(aws_secret_key),
+            region_name=str(region),
+            config=config
+        )
 
     def get_vpcs(self, vpc_id: str = None):
         if vpc_id:
@@ -38,6 +52,7 @@ class AwsService:
             return response
         else:
             self.log.error_and_exit('AWS http response error getting vpc data.')
+
 
     def get_inet_gateways(self, vpc_id):
         response = self.aws_ec2_client.describe_internet_gateways(
@@ -56,6 +71,7 @@ class AwsService:
         else:
             self.log.error_and_exit('AWS http response error getting internet gateway data.')
 
+
     def get_subnets(self, vpc_id):
         response = self.aws_ec2_client.describe_subnets(
             Filters=[
@@ -73,6 +89,7 @@ class AwsService:
         else:
             self.log.error_and_exit('AWS http response error getting subnet data.')
 
+
     def get_route_tables(self, subnet_id):
         response = self.aws_ec2_client.describe_route_tables(
             Filters=[
@@ -89,6 +106,7 @@ class AwsService:
             return response
         else:
             self.log.error_and_exit('AWS http response error getting route tables data.')
+
 
     def get_route_tables_main_vpc(self, vpc_id):
         response = self.aws_ec2_client.describe_route_tables(
@@ -113,6 +131,7 @@ class AwsService:
         else:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
 
+
     def get_ec2s(self, subnet_id):
         response = self.aws_ec2_client.describe_instances(
             Filters=[
@@ -128,7 +147,7 @@ class AwsService:
         if validate_aws_response(response):
             return response
         else:
-            self.log.error_and_exit('AWS http response error getting main route tables data.')
+            self.log.error_and_exit('AWS http response error getting ec2 data.')
 
 
     def get_rds_instances(self):
@@ -138,7 +157,8 @@ class AwsService:
         if validate_aws_response(response):
             return response
         else:
-            self.log.error_and_exit('AWS http response error getting main route tables data.')
+            self.log.error_and_exit('AWS http response error getting rds intances data.')
+
 
     def get_rds_clusters(self):
 
@@ -147,8 +167,7 @@ class AwsService:
         if validate_aws_response(response):
             return response
         else:
-            self.log.error_and_exit('AWS http response error getting main route tables data.')
-
+            self.log.error_and_exit('AWS http response error getting rds clusters data.')
 
 
     def get_subnets_from_db_group(self):
@@ -161,3 +180,11 @@ class AwsService:
             self.log.error_and_exit('AWS http response error getting main route tables data.')
 
 
+    def get_elbs(self):
+
+        response = self.elbv2_client.describe_load_balancers()
+
+        if validate_aws_response(response):
+            return response
+        else:
+            self.log.error_and_exit('AWS http response error getting elb data.')

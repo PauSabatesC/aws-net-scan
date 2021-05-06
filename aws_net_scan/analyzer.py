@@ -42,7 +42,7 @@ class Analyzer:
                         cidr=vpc['CidrBlock'],
                         tags=tags,
                         igw=igw,
-                        name=name
+                        name=resize_name(name)
                     )
                 )
         except botocore.exceptions.ClientError as e:
@@ -57,6 +57,7 @@ class Analyzer:
             self.__search_ec2(subnet)
 
         self.__search_rds()
+        self.__search_elb()
 
     def __search_subnets(self, vpc: AwsObjectData):
         try:
@@ -80,7 +81,7 @@ class Analyzer:
                         tags=tags,
                         cidr=subnet['CidrBlock'],
                         route_tables=route_tables,
-                        name=name
+                        name=resize_name(name)
                     )
                 )
         except botocore.exceptions.ClientError as e:
@@ -109,7 +110,7 @@ class Analyzer:
                             subnet_id=subnet.id,
                             vpc_id=subnet.vpc_id,
                             tags=tags,
-                            name=name,
+                            name=resize_name(name),
                             public_ip=public_ip,
                             private_ip=instance['PrivateIpAddress'],
                             sec_groups=instance['SecurityGroups'],
@@ -118,7 +119,7 @@ class Analyzer:
                         )
                     )
         except botocore.exceptions.ClientError as e:
-            self.log.error_and_exit('Error getting subnets from VPC.', e)
+            self.log.error('Error getting ec2s from VPC.', e)
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get ec2s. Try in a few minutes.', e)
 
@@ -133,10 +134,10 @@ class Analyzer:
                                 if rds_subnet['SubnetIdentifier'] == subnet.id:
                                     self.data.add_rds(
                                         AwsObjectData(
-                                            self_id=db_instance['DBInstanceIdentifier'],
+                                            self_id=resize_name(db_instance['DBInstanceIdentifier']),
                                             subnet_id=subnet.id,
                                             vpc_id=db_instance['DBSubnetGroup']['VpcId'],
-                                            name=db_instance['DBInstanceIdentifier'],
+                                            name=resize_name(db_instance['DBInstanceIdentifier']),
                                             engine=db_instance['Engine']
                                         )
                                     )
@@ -156,14 +157,37 @@ class Analyzer:
                         if not subnet['SubnetIdentifier'] in subnets_visited:
                             self.data.add_rds(
                                 AwsObjectData(
-                                    self_id=cluster_subnet_groups[subnet_group['DBSubnetGroupName']],
+                                    self_id=resize_name(cluster_subnet_groups[subnet_group['DBSubnetGroupName']]),
                                     subnet_id=subnet['SubnetIdentifier'],
                                     engine=cluster_subnet_engine[subnet_group['DBSubnetGroupName']]
                                 )
                             )
                             subnets_visited.append(subnet['SubnetIdentifier'])
         except botocore.exceptions.ClientError as e:
-            self.log.error_and_exit('Error getting rds.', e)
+            self.log.error('Error getting rds.', e)
+        except botocore.exceptions.EndpointConnectionError as e:
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
+                                    'Try in a few minutes.', e)
+
+
+    def __search_elb(self):
+        try:
+            response = self.aws_service.get_elbs()
+            for elb in response['LoadBalancers']:
+                elb_name = elb['LoadBalancerName']
+                elb_type = elb['Type']
+                elb_state = elb['State']['Code']
+                for subnet in elb['AvailabilityZones']:
+                    self.data.add_elb(
+                        AwsObjectData(
+                            self_id=resize_name(elb_name),
+                            subnet_id=subnet['SubnetId'],
+                            type=elb_type,
+                            state=elb_state
+                        )
+                    )
+        except botocore.exceptions.ClientError as e:
+            self.log.error('Error getting load balancers.', e)
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
                                     'Try in a few minutes.', e)
