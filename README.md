@@ -29,18 +29,22 @@ aws-net-scan --help
 - Required parameter:
 
 ```sh
-aws-net-scan --region eu-west-1
+ --region eu-west-1
 ```
 
 - Optional parameters:
 
 ```sh
-aws-net-scan --profile name_profile
+ --profile name_profile
 ```
 ```sh
-aws-net-scan --vpc-id vpc-0ed0X857b02b8b
+ --vpc-id vpc-0ed0X857b02b8b
 ```
+- Example:
 
+```sh
+aws-net-scan --region eu-west-1 --profile dev_profile
+```
 
 ### Project development:
 
