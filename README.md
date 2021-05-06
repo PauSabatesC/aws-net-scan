@@ -9,7 +9,10 @@
 <h3 align="center">
 	Get useful AWS data regarding subnets, ec2s, route tables and vpcs in a structured output in your teminal.
 </h3>
-![PyPI - Downloads](https://img.shields.io/pypi/dm/aws-net-scan)
+
+<a href="https://pypi.org/project/aws-net-scan" target="_blank">
+	<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/aws-net-scan">
+</a>
 
 ## Installation:
 ```sh
