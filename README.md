@@ -18,6 +18,14 @@
 ```sh
 pip install aws-net-scan
 ```
+## Features:
+Get a list of your:
+- ✔️ VPCs
+- ✔️ Subnets
+- ✔️ EC2s
+- ✔️ Elastic Load Balancers
+- ✔️ Aurora RDS
+- ✔️ Elastic Containers Services (ECS)
 
 ## How to use:
 
