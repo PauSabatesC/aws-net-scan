@@ -75,6 +75,21 @@ def add_print_elb(elb_list):
         data.append({'type': 'elb', 'value': value})
 
 
+def add_print_ecs(ecs_list):
+    for ecs in ecs_list:
+        value = [
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            'ECS: ' + ecs.id,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Service: ' + ecs.service,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Status: ' + ecs.status,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Cluster: ' + ecs.cluster,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Private IP: ' + ecs.private_ip,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Public IP: ' + ecs.public_ip,
+        ]
+        data.append({'type': 'ecs', 'value': value})
+
+
 def print_data():
     if data:
         data_sorted = sorted(data, key=lambda i: (i['type']))

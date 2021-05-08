@@ -97,5 +97,11 @@ class AwsServicesData:
                             elb_list.append(elb)
                     add_print_elb(elb_list)
 
+                    ecs_list = []
+                    for j, ecs in enumerate(self.__ecs):
+                        if subnet.id == ecs.subnet_id:
+                            ecs_list.append(ecs)
+                    add_print_ecs(ecs_list)
+
                     print_data()
 

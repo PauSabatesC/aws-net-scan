@@ -55,9 +55,9 @@ class Analyzer:
             self.__search_subnets(vpc)
         for subnet in self.data.subnets:
             self.__search_ec2(subnet)
-
         self.__search_rds()
         self.__search_elb()
+        self.__search_ecs()
 
     def __search_subnets(self, vpc: AwsObjectData):
         try:
@@ -89,6 +89,10 @@ class Analyzer:
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
                                     'Try in a few minutes.', e)
+        except botocore.exceptions.ParamValidationError as e:
+            self.log.error_and_exit('Error getting subnets.', e)
+        except Exception as e:
+            self.log.error_and_exit('Unexpected error getting subnets.', e)
 
     def __search_ec2(self, subnet):
         try:
@@ -122,6 +126,10 @@ class Analyzer:
             self.log.error('Error getting ec2s from VPC.', e)
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get ec2s. Try in a few minutes.', e)
+        except botocore.exceptions.ParamValidationError as e:
+            self.log.error('Error getting ec2 data.', e)
+        except Exception as e:
+            self.log.error('Unexpected error getting ec2 data.', e)
 
     def __search_rds(self):
         try:
@@ -168,7 +176,10 @@ class Analyzer:
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
                                     'Try in a few minutes.', e)
-
+        except botocore.exceptions.ParamValidationError as e:
+            self.log.error('Error getting rds data.', e)
+        except Exception as e:
+            self.log.error('Unexpected error getting rds data.', e)
 
     def __search_elb(self):
         try:
@@ -191,3 +202,62 @@ class Analyzer:
         except botocore.exceptions.EndpointConnectionError as e:
             self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
                                     'Try in a few minutes.', e)
+        except botocore.exceptions.ParamValidationError as e:
+            self.log.error('Error getting elb data.', e)
+        except Exception as e:
+            self.log.error('Unexpected error getting elb data.', e)
+
+    def __search_ecs(self):
+        try:
+            tasks_data = []
+            clusters = self.aws_service.get_ecs_clusters()
+            for cluster in clusters:
+                task_list = self.aws_service.get_ecs_tasks_list(cluster_arn=cluster)
+                tasks_data.append(self.aws_service.get_ecs_tasks_data(task_list, cluster))
+
+            for task_obj in tasks_data:
+                for task in task_obj['tasks']:
+                    subnet = ' '
+                    private_ip = ' '
+                    public_ip = ' '
+                    cluster_name = str(task['clusterArn']).split('/')[1]
+                    task_id = str(task['taskArn']).split('/')[1]
+                    status = task['lastStatus']
+                    type = task['launchType']
+                    service = str(task['group']).split(':')[1]
+                    for att in task['attachments']:
+                        for detail in att['details']:
+                            if detail['name'] == 'subnetId':
+                                subnet = detail['value']
+                            if detail['name'] == 'privateIPv4Address':
+                                private_ip = detail['value']
+
+                    #find public ip
+                    network_interf_response = self.aws_service.get_network_interface_public_ip(private_ip)
+                    for ni in network_interf_response['NetworkInterfaces']:
+                        if 'PublicIp' in ni['Association']:
+                            public_ip = ni['Association']['PublicIp']
+
+                    self.data.add_ecs(
+                        AwsObjectData(
+                            self_id=task_id,
+                            subnet_id=subnet,
+                            status=status,
+                            cluster=cluster_name,
+                            service=service,
+                            type=type,
+                            private_ip=private_ip,
+                            public_ip=public_ip
+                        )
+                    )
+
+
+        except botocore.exceptions.ClientError as e:
+            self.log.error('Error getting ecs data.', e)
+        except botocore.exceptions.EndpointConnectionError as e:
+            self.log.error_and_exit('Could not be stablished a connection to AWS to get subnets. '
+                                    'Try in a few minutes.', e)
+        except botocore.exceptions.ParamValidationError as e:
+            self.log.error('Error getting ecs data.', e)
+        except Exception as e:
+            self.log.error('Unexpected error getting ecs data.', e)
