@@ -16,3 +16,9 @@ def validate_aws_response(response: dict):
         return False
     else:
         return True
+
+
+def resize_name(word: str):
+    if len(word) <= 20:
+        return word
+    return word[:20] + '...'

@@ -2,6 +2,8 @@ from .entities import AwsObjectData
 from .logger import LogColors
 from tabulate import tabulate
 
+data = []
+
 
 def print_vpc_data(vpc_data: AwsObjectData):
     print('\n' +
@@ -35,35 +37,64 @@ def print_subnet_data(subnet_data: AwsObjectData):
         )
 
 
-def print_ec2s(ec2_list):
-    data = []
+def add_print_ec2s(ec2_list):
     for ec2 in ec2_list:
-        data.append([
+        value = [
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             'EC2: ' + ec2.id,
             LogColors.INTERSECTION + LogColors.BLUE2 + 'Name: ' + ec2.name,
-            LogColors.INTERSECTION + LogColors.BLUE2 + ec2.state,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Status: ' + ec2.state,
             LogColors.INTERSECTION + LogColors.BLUE2 + ec2.instance_type,
             LogColors.INTERSECTION + LogColors.BLUE2 + 'Private IP: ' + ec2.private_ip,
             LogColors.INTERSECTION + LogColors.BLUE2 + 'Public IP: ' + ec2.public_ip
         ]
-        )
-
-    if data:
-        print(tabulate(data, tablefmt="plain"))
+        data.append({'type': 'ec2', 'value': value})
 
 
-def print_rds(rds_list):
-    data = []
+def add_print_rds(rds_list):
     for rds in rds_list:
-        data.append([
+        value = [
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
             'RDS: ' + rds.id,
             LogColors.INTERSECTION + LogColors.BLUE2 + 'Engine: ' + rds.engine,
         ]
-        )
+        data.append({'type': 'rds', 'value': value})
 
+
+def add_print_elb(elb_list):
+    for elb in elb_list:
+        value = [
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            'ELB: ' + elb.id,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Type: ' + elb.type,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Status: ' + elb.state,
+        ]
+        data.append({'type': 'elb', 'value': value})
+
+
+def add_print_ecs(ecs_list):
+    for ecs in ecs_list:
+        value = [
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            LogColors.START_SUBTITLE_2 + LogColors.START_SUBTITLE_2 +
+            'ECS: ' + ecs.id,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Service: ' + ecs.service,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Status: ' + ecs.status,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Cluster: ' + ecs.cluster,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Private IP: ' + ecs.private_ip,
+            LogColors.INTERSECTION + LogColors.BLUE2 + 'Public IP: ' + ecs.public_ip,
+        ]
+        data.append({'type': 'ecs', 'value': value})
+
+
+def print_data():
     if data:
-        print(tabulate(data, tablefmt="plain"))
+        data_sorted = sorted(data, key=lambda i: (i['type']))
+        data_final = []
+        for element in data_sorted:
+            data_final.append(element['value'])
+        print(tabulate(data_final, tablefmt="plain"))
+    data.clear()

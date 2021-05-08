@@ -5,7 +5,7 @@ with open("README.md", "rb") as f:
 
 setup(
     name='aws-net-scan',
-    version='0.3.0',
+    version='0.4.0',
     description='Get useful AWS data regarding VPC networking in a structured output.',
     long_description=readme,
     long_description_content_type="text/markdown",
