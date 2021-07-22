@@ -5,7 +5,7 @@ from .logger import Logger
 
 
 class AwsService:
-    def __init__(self, aws_key: str, aws_secret_key: str, region: str, log: Logger):
+    def __init__(self, profile_name: str, log: Logger):
         self.log = log
         config = Config(
             retries={
@@ -13,34 +13,12 @@ class AwsService:
                 'mode': 'standard'
             }
         )
-        self.aws_ec2_client = boto3.client(
-            'ec2',
-            aws_access_key_id=str(aws_key),
-            aws_secret_access_key=str(aws_secret_key),
-            region_name=str(region),
-            config=config
-        )
-        self.rds_client = boto3.client(
-            'rds',
-            aws_access_key_id=str(aws_key),
-            aws_secret_access_key=str(aws_secret_key),
-            region_name=str(region),
-            config=config
-        )
-        self.elbv2_client = boto3.client(
-            'elbv2',
-            aws_access_key_id=str(aws_key),
-            aws_secret_access_key=str(aws_secret_key),
-            region_name=str(region),
-            config=config
-        )
-        self.ecs_client = boto3.client(
-            'ecs',
-            aws_access_key_id=str(aws_key),
-            aws_secret_access_key=str(aws_secret_key),
-            region_name=str(region),
-            config=config
-        )
+        boto3.setup_default_session(profile_name=profile_name)
+
+        self.aws_ec2_client = boto3.client('ec2')
+        self.rds_client = boto3.client('rds')
+        self.elbv2_client = boto3.client('elbv2')
+        self.ecs_client = boto3.client('ecs')
 
     def get_vpcs(self, vpc_id: str = None):
         if vpc_id:

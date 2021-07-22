@@ -8,9 +8,8 @@ class AwsServicesData:
     Lists of different aws services data.
     """
 
-    def __init__(self, aws_region: str, log: Logger):
+    def __init__(self, log: Logger):
         self.log = log
-        self.region: str = aws_region
         self.__vpcs: List[AwsObjectData] = []
         self.__subnets: List[AwsObjectData] = []
         self.__ec2: List[AwsObjectData] = []

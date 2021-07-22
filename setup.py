@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
-
+from aws_net_scan.__main__ import __version__
 with open("README.md", "rb") as f:
     readme = f.read().decode("utf-8")
 
 setup(
     name='aws-net-scan',
-    version='0.4.0',
+    version=__version__,
     description='Get useful AWS data regarding VPC networking in a structured output.',
     long_description=readme,
     long_description_content_type="text/markdown",
