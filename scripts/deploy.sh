@@ -15,8 +15,8 @@ source venv/bin/activate
 #export $(grep -v '^#' ./$ENV.env | xargs)
 
 pip3 install -e .[deploy]
-python setup.py sdist
+python3 setup.py sdist
 pip3 install --upgrade pip
-python -m twine upload dist/*
+python3 -m twine upload dist/*
 echo "Finished."
 

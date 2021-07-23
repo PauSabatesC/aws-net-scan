@@ -34,24 +34,24 @@ The cli will use the AWS profiles you configured wit aws cli that you have alrea
 ```sh
 aws-net-scan --help
 ```
+
 - Required parameter:
 
+
 ```sh
- --region eu-west-1
+ --profile profile
 ```
 
 - Optional parameters:
 
 ```sh
- --profile name_profile
-```
-```sh
  --vpc-id vpc-0ed0X857b02b8b
 ```
+
 - Example:
 
 ```sh
-aws-net-scan --region eu-west-1 --profile dev_profile
+aws-net-scan --profile dev_profile
 ```
 
 ### Project development:

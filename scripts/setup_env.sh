@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 VIRTUAL_ENV="venv"
 ENV=$1

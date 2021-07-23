@@ -20,14 +20,6 @@ from .services import AwsService
 
 def set_cli_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
-        '--region',
-        nargs=1,
-        help='Specific region to scan. The aws profile region will be omitted and used this one.',
-        default=['default'],
-        required=True
-    )
-
-    parser.add_argument(
         '--vpc-id',
         nargs=1,
         help='vpc id  to search from'
@@ -37,7 +29,7 @@ def set_cli_args(parser: argparse.ArgumentParser) -> None:
         '--profile',
         nargs=1,
         help='AWS credentials profile located in ~/.aws/credentials',
-        default=['default']
+        required=True
     )
 
 
